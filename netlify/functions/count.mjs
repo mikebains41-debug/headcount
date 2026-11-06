@@ -1,18 +1,16 @@
 // HeadCount global counter, stored in Netlify Blobs (no database to set up).
 //
-// GET  /api/count              -> { people, members, regions:{CC:n}, you:bool }
-// POST /api/count {id,hh,reg}  -> same shape, after adding/updating this device
+// GET  /api/count              -> { people, members, regions:{CC:n} }
+// POST /api/count {id,hh,reg?}  -> same shape, after adding/updating this device
 //
-// Design (Option A): fast and cheap. We keep ONE aggregate document, not a row
-// per person. Each device sends a stable random id; we remember the last ~20000
-// ids we've seen so a repeat tap from the same phone doesn't double-count within
-// that window. This counts participants, not a perfect census - and the app says so.
+// Country comes from Netlify's edge geo header (accurate, no GPS, no permission).
+// The client may send a fallback `reg`, used only if the header is missing.
 
 import { getStore } from '@netlify/blobs';
 
 const KEY = 'agg';
-const SEEN_CAP = 20000;      // how many recent device ids we remember for dedupe
-const MAX_HH = 30;           // sane cap on household size
+const SEEN_CAP = 20000;
+const MAX_HH = 30;
 
 const headers = {
   'Content-Type': 'application/json',
@@ -29,6 +27,16 @@ const cleanHh  = (n) => {
   return Number.isFinite(v) ? Math.min(MAX_HH, Math.max(1, v)) : 1;
 };
 
+function countryFrom(req, ctx) {
+  try {
+    const c = ctx && ctx.geo && ctx.geo.country && ctx.geo.country.code;
+    if (c) return cleanReg(c);
+  } catch {}
+  const h = req.headers.get('x-country') || req.headers.get('x-nf-country') || '';
+  if (h) return cleanReg(h);
+  return '';
+}
+
 async function readAgg(store) {
   try {
     const a = await store.get(KEY, { type: 'json' });
@@ -38,62 +46,61 @@ async function readAgg(store) {
         members: Number(a.members) || 0,
         regions: (a.regions && typeof a.regions === 'object') ? a.regions : {},
         seen: Array.isArray(a.seen) ? a.seen : [],
-        hh: (a.hh && typeof a.hh === 'object') ? a.hh : {},  // id -> last household size
+        hh: (a.hh && typeof a.hh === 'object') ? a.hh : {},
+        reg: (a.reg && typeof a.reg === 'object') ? a.reg : {},
       };
     }
   } catch {}
-  return { people: 0, members: 0, regions: {}, seen: [], hh: {} };
+  return { people: 0, members: 0, regions: {}, seen: [], hh: {}, reg: {} };
 }
 
-function publicShape(agg, you) {
-  return {
-    people: agg.people,
-    members: agg.members,
-    regions: agg.regions,
-    you: !!you,
-  };
-}
+const shape = (a) => ({ people: a.people, members: a.members, regions: a.regions });
 
-export default async (req) => {
+export default async (req, ctx) => {
   if (req.method === 'OPTIONS') return new Response('', { status: 204, headers });
 
   const store = getStore('headcount');
 
   if (req.method === 'GET') {
     const agg = await readAgg(store);
-    return new Response(JSON.stringify(publicShape(agg, false)), { headers });
+    return new Response(JSON.stringify(shape(agg)), { headers });
   }
 
   if (req.method === 'POST') {
     let body = {};
     try { body = await req.json(); } catch {}
-    const id  = cleanId(body.id);
-    const reg = cleanReg(body.reg);
-    const hh  = cleanHh(body.hh);
-    if (!id) {
-      return new Response(JSON.stringify({ error: 'no id' }), { status: 400, headers });
-    }
+    const id = cleanId(body.id);
+    const hh = cleanHh(body.hh);
+    const reg = countryFrom(req, ctx) || cleanReg(body.reg);
+    if (!id) return new Response(JSON.stringify({ error: 'no id' }), { status: 400, headers });
 
     const agg = await readAgg(store);
     const known = agg.hh[id] !== undefined || agg.seen.includes(id);
 
     if (!known) {
-      // brand-new device: add one person + their household to the totals
       agg.people += 1;
       agg.members += hh;
       agg.regions[reg] = (agg.regions[reg] || 0) + 1;
       agg.hh[id] = hh;
+      agg.reg[id] = reg;
       agg.seen.push(id);
       if (agg.seen.length > SEEN_CAP) agg.seen = agg.seen.slice(-SEEN_CAP);
-    } else if (agg.hh[id] !== undefined && agg.hh[id] !== hh) {
-      // same device changed its household size: adjust members, keep people the same
-      agg.members += (hh - agg.hh[id]);
-      if (agg.members < agg.people) agg.members = agg.people;
-      agg.hh[id] = hh;
+    } else {
+      if (agg.hh[id] !== undefined && agg.hh[id] !== hh) {
+        agg.members += (hh - agg.hh[id]);
+        if (agg.members < agg.people) agg.members = agg.people;
+        agg.hh[id] = hh;
+      }
+      const old = agg.reg[id];
+      if (reg && reg !== 'ZZ' && old && old !== reg) {
+        if (agg.regions[old]) { agg.regions[old] -= 1; if (agg.regions[old] <= 0) delete agg.regions[old]; }
+        agg.regions[reg] = (agg.regions[reg] || 0) + 1;
+        agg.reg[id] = reg;
+      }
     }
 
     await store.setJSON(KEY, agg);
-    return new Response(JSON.stringify(publicShape(agg, true)), { headers });
+    return new Response(JSON.stringify(shape(agg)), { headers });
   }
 
   return new Response(JSON.stringify({ error: 'method' }), { status: 405, headers });

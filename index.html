@@ -4,43 +4,53 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>HeadCount — how many humans are actually here?</title>
-<meta name="description" content="A live, anonymous worldwide headcount. Tap once and watch the number grow.">
+<meta name="description" content="A live, anonymous worldwide headcount. Tap once and watch your country light up.">
 <meta property="og:title" content="HeadCount">
-<meta property="og:description" content="How many humans are actually here? Tap in and find out.">
+<meta property="og:description" content="How many humans are actually here? Tap in and watch the world light up.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://headcount-3671c5be.netlify.app/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="HeadCount">
+  <meta name="twitter:description" content="How many humans are actually here? Tap in and watch the world light up.">
+  <meta name="twitter:image" content="https://headcount-3671c5be.netlify.app/og.png">
+
 <style>
   :root{
     color-scheme: dark;
     --bg:#070b18; --card:#121a33; --card2:#0d1430;
     --ink:#f3f6ff; --mut:#9fb0d8; --mut2:#6f80ab;
     --accent:#4da3ff; --mint:#7ef0c8; --violet:#b98bff; --line:#223056; --good:#2bd4a0;
+    --land:#1b2748;
     box-sizing:border-box;
   }
   *{box-sizing:border-box}
   html,body{margin:0;height:100%}
   body{
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,system-ui,sans-serif;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,system-ui,"Noto Sans",sans-serif;
     color:var(--ink);
     background:
       radial-gradient(1100px 560px at 50% -12%, #1b2857 0%, rgba(27,40,87,0) 62%),
-      radial-gradient(800px 500px at 85% 110%, #2a1b4d 0%, rgba(42,27,77,0) 55%),
+      radial-gradient(820px 520px at 85% 112%, #2a1b4d 0%, rgba(42,27,77,0) 55%),
       var(--bg);
-    min-height:100%;
-    -webkit-tap-highlight-color:transparent;
-    overflow-x:hidden;
-    padding-top:env(safe-area-inset-top,0px);
-    padding-bottom:env(safe-area-inset-bottom,0px);
+    min-height:100%;-webkit-tap-highlight-color:transparent;overflow-x:hidden;
+    padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
   }
-  .wrap{max-width:480px;margin:0 auto;padding:22px 18px 46px;position:relative;z-index:1}
-
+  .wrap{max-width:500px;margin:0 auto;padding:22px 18px 46px;position:relative;z-index:1}
   .brand{display:flex;align-items:center;gap:10px;justify-content:center;margin:4px 0 2px}
-  .globe{width:34px;height:34px;border-radius:50%;position:relative;
+  .globe{width:36px;height:36px;border-radius:50%;position:relative;
     background:radial-gradient(circle at 32% 28%, #7ef0c8 0%, #4da3ff 52%, #2b63d6 100%);
-    box-shadow:0 0 26px rgba(77,163,255,.6);animation:spin 8s linear infinite}
+    box-shadow:0 0 28px rgba(77,163,255,.6);animation:spin 8s linear infinite}
   .globe::after{content:"";position:absolute;inset:0;border-radius:50%;
     background:repeating-linear-gradient(90deg,rgba(255,255,255,.14) 0 2px,transparent 2px 7px)}
   @keyframes spin{to{transform:rotate(360deg)}}
-  .brand h1{font-size:21px;margin:0;font-weight:800;letter-spacing:.3px}
-  .tag{text-align:center;color:var(--mut);font-size:13px;margin:6px 0 22px}
+  .brand h1{font-size:22px;margin:0;font-weight:800;letter-spacing:.3px}
+  .tag{text-align:center;color:var(--mut);font-size:13px;margin:6px 0 18px}
+
+  .langbar{display:flex;justify-content:center;margin:0 0 16px}
+  .langbar select{background:var(--card);color:var(--mut);border:1px solid var(--line);border-radius:999px;
+    padding:6px 14px;font-size:12px;font-family:inherit}
 
   .screen{display:none;animation:rise .4s cubic-bezier(.2,.8,.2,1)}
   .screen.on{display:block}
@@ -48,10 +58,10 @@
 
   .card{background:linear-gradient(180deg,var(--card) 0%,var(--card2) 100%);
     border:1px solid var(--line);border-radius:24px;padding:28px 22px;text-align:center}
-  .emoji{font-size:52px;line-height:1;animation:float 3.6s ease-in-out infinite}
+  .emoji{font-size:54px;line-height:1;animation:float 3.6s ease-in-out infinite}
   @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
   .big{font-size:21px;font-weight:800;margin:16px 0 8px}
-  .card p{color:var(--mut);font-size:14px;line-height:1.6;margin:0 auto 24px;max-width:280px}
+  .card p{color:var(--mut);font-size:14px;line-height:1.6;margin:0 auto 24px;max-width:290px}
 
   .btn{display:block;width:100%;border:0;border-radius:18px;padding:17px;
     font-size:17px;font-weight:800;color:#04122b;cursor:pointer;
@@ -59,20 +69,20 @@
     box-shadow:0 12px 30px rgba(77,163,255,.4);transition:transform .08s,box-shadow .2s}
   .btn:active{transform:scale(.97)}
   .btn.big-tap{font-size:19px;padding:20px;animation:breathe 2.6s ease-in-out infinite}
-  @keyframes breathe{0%,100%{box-shadow:0 12px 30px rgba(77,163,255,.4)}50%{box-shadow:0 12px 40px rgba(126,240,200,.6)}}
+  @keyframes breathe{0%,100%{box-shadow:0 12px 30px rgba(77,163,255,.4)}50%{box-shadow:0 12px 42px rgba(126,240,200,.6)}}
   .btn.ghost{background:transparent;color:var(--mut);box-shadow:none;font-weight:700;font-size:15px;padding:12px;margin-top:4px}
 
   .stepper{display:flex;align-items:center;justify-content:center;gap:24px;margin:10px 0 6px}
-  .round{width:62px;height:62px;border-radius:50%;border:1px solid var(--line);
+  .round{width:64px;height:64px;border-radius:50%;border:1px solid var(--line);
     background:var(--card);color:var(--ink);font-size:32px;cursor:pointer;
     display:flex;align-items:center;justify-content:center;transition:transform .1s,border-color .15s}
   .round:active{transform:scale(.88);border-color:var(--accent)}
-  .pick{font-size:58px;font-weight:900;min-width:76px;text-align:center;
+  .pick{font-size:60px;font-weight:900;min-width:78px;text-align:center;
     background:linear-gradient(90deg,#7ef0c8,#4da3ff);-webkit-background-clip:text;background-clip:text;color:transparent}
   .sub{color:var(--mut2);font-size:12px;text-align:center;margin:2px 0 24px}
 
   .world{background:linear-gradient(180deg,var(--card) 0%,var(--card2) 100%);
-    border:1px solid var(--line);border-radius:22px;padding:20px 16px;text-align:center;margin:0 0 22px}
+    border:1px solid var(--line);border-radius:22px;padding:20px 16px;text-align:center;margin:0 0 20px}
   .world .wl{color:var(--mut);font-size:11px;letter-spacing:1.6px;text-transform:uppercase}
   .world .wn{font-size:clamp(32px,11vw,46px);font-weight:900;letter-spacing:.5px;font-variant-numeric:tabular-nums;margin:8px 0 2px;
     background:linear-gradient(90deg,#b98bff,#4da3ff);-webkit-background-clip:text;background-clip:text;color:transparent}
@@ -96,24 +106,30 @@
   .stat .n{font-size:24px;font-weight:800;font-variant-numeric:tabular-nums}
   .stat .k{color:var(--mut);font-size:11.5px;margin-top:3px}
 
-  .maph{color:var(--mut);font-size:12px;margin:4px 2px 8px;display:flex;justify-content:space-between}
-  .map{position:relative;height:160px;border-radius:18px;border:1px solid var(--line);background:var(--card2);overflow:hidden}
+  .maph{color:var(--mut);font-size:12px;margin:4px 2px 8px;display:flex;justify-content:space-between;align-items:center}
+  .maplegend{display:flex;align-items:center;gap:6px;color:var(--mut2);font-size:11px}
+  .lgsw{width:40px;height:8px;border-radius:4px;background:linear-gradient(90deg,#1b2748,#4da3ff,#7ef0c8)}
+  .mapwrap{position:relative;border-radius:18px;border:1px solid var(--line);background:#0a1026;overflow:hidden}
+  .mapwrap svg{display:block;width:100%;height:auto}
+  .country{fill:var(--land);stroke:#0a1026;stroke-width:.3;transition:fill .5s;cursor:pointer}
+  .country.me{stroke:#fff;stroke-width:.9}
+  .maptip{position:absolute;pointer-events:none;background:#04122b;border:1px solid var(--line);
+    color:var(--ink);font-size:12px;font-weight:700;padding:5px 9px;border-radius:8px;transform:translate(-50%,-130%);white-space:nowrap;opacity:0;transition:opacity .15s;z-index:3}
+  .maptip.on{opacity:1}
+  .mapfall{position:relative;height:160px}
   .pin{position:absolute;width:8px;height:8px;border-radius:50%;background:var(--mint);
-    box-shadow:0 0 12px rgba(126,240,200,.9);transform:translate(-50%,-50%);animation:pop .5s ease}
-  .pin.me{background:#fff;box-shadow:0 0 0 5px rgba(77,163,255,.4),0 0 16px #fff;width:12px;height:12px}
-  @keyframes pop{from{transform:translate(-50%,-50%) scale(0)}to{transform:translate(-50%,-50%) scale(1)}}
+    box-shadow:0 0 12px rgba(126,240,200,.9);transform:translate(-50%,-50%)}
 
   .regions{margin-top:18px}
   .reg{display:flex;align-items:center;gap:10px;padding:10px 2px;border-bottom:1px solid var(--line)}
   .reg:last-child{border-bottom:0}
-  .reg .flag{font-size:18px;width:24px;text-align:center}
+  .reg .flag{font-size:18px;width:26px;text-align:center}
   .reg .rn{flex:1;font-size:14px}
   .reg .bar{height:6px;border-radius:3px;background:linear-gradient(90deg,#4da3ff,#7ef0c8);min-width:4px;transition:width .5s}
   .reg .rc{color:var(--mut);font-size:13px;font-variant-numeric:tabular-nums;min-width:30px;text-align:right}
 
   .note{color:var(--mut2);font-size:11.5px;line-height:1.6;text-align:center;margin:22px 8px 0}
   .offline{display:none;text-align:center;color:#ffd27e;font-size:12px;background:rgba(255,210,126,.1);border-radius:14px;padding:10px;margin:0 0 16px}
-
   canvas#confetti{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:50}
 </style>
 </head>
@@ -121,65 +137,62 @@
 <canvas id="confetti" aria-hidden="true"></canvas>
 <div class="wrap">
   <div class="brand"><div class="globe" aria-hidden="true"></div><h1>HeadCount</h1></div>
-  <div class="tag">how many humans are actually here?</div>
+  <div class="tag" data-t="tagline">how many humans are actually here?</div>
+  <div class="langbar"><select id="lang" aria-label="language"></select></div>
+  <div id="offline" class="offline" data-t="offline">Can't reach the live count, trying again...</div>
 
-  <div id="offline" class="offline">Can't reach the live count right now — trying again…</div>
-
-  <!-- 1: JOIN -->
   <section id="s1" class="screen on">
     <div class="card">
-      <div class="emoji">🌍</div>
-      <div class="big">You're one of us</div>
-      <p>No name, no email, no sign-up. One tap adds you to the living headcount of planet Earth.</p>
-      <button class="btn big-tap" id="joinBtn">Count me in</button>
+      <div class="emoji">&#127757;</div>
+      <div class="big" data-t="j_title">You're one of us</div>
+      <p data-t="j_body">No name, no email, no sign-up. One tap adds you to the living headcount of planet Earth.</p>
+      <button class="btn big-tap" id="joinBtn" data-t="j_btn">Count me in</button>
     </div>
-    <div class="note">We only store a random ID for your device and a rough region — never your name, contacts, or exact location.</div>
+    <div class="note" data-t="privacy">We only store a random ID for your device and your country, never your name, contacts, or exact location.</div>
   </section>
 
-  <!-- 2: HOUSEHOLD -->
   <section id="s2" class="screen">
     <div class="card">
-      <div class="emoji">🏠</div>
-      <div class="big">How many live with you?</div>
-      <p>Count everyone in your home, including you.</p>
+      <div class="emoji">&#127969;</div>
+      <div class="big" data-t="h_title">How many live with you?</div>
+      <p data-t="h_body">Count everyone in your home, including you.</p>
       <div class="stepper">
-        <button class="round" id="minus" aria-label="fewer">−</button>
+        <button class="round" id="minus" aria-label="fewer">&#8722;</button>
         <div class="pick" id="hh">3</div>
         <button class="round" id="plus" aria-label="more">+</button>
       </div>
-      <div class="sub">shown separately from the headcount</div>
-      <button class="btn" id="doneBtn">Add us 🎉</button>
+      <div class="sub" data-t="h_sub">shown separately from the headcount</div>
+      <button class="btn" id="doneBtn" data-t="h_btn">Add us</button>
     </div>
   </section>
 
-  <!-- 3: LIVE -->
   <section id="s3" class="screen">
     <div class="world">
-      <div class="wl">Humans on Earth right now</div>
-      <div class="wn" id="world">—</div>
-      <div class="ws">UN estimate · about 69 million more each year</div>
+      <div class="wl" data-t="w_label">Humans on Earth right now</div>
+      <div class="wn" id="world">&mdash;</div>
+      <div class="ws" data-t="w_sub">UN estimate, about 69 million more each year</div>
     </div>
 
-    <div class="divider">and here's us</div>
+    <div class="divider" data-t="us">and here's us</div>
 
-    <div style="text-align:center"><span class="me-badge">✓ You're counted</span></div>
-    <div class="label">Humans on HeadCount</div>
-    <div class="count" id="people">—</div>
+    <div style="text-align:center"><span class="me-badge">&#10003; <span data-t="counted">You're counted</span></span></div>
+    <div class="label" data-t="hc_label">Humans on HeadCount</div>
+    <div class="count" id="people">&mdash;</div>
     <div class="rankline" id="rank"></div>
-    <div class="live"><span class="dot"></span><span id="liveTxt">counting live…</span></div>
+    <div class="live"><span class="dot"></span><span id="liveTxt" data-t="counting">counting live...</span></div>
 
     <div class="stats">
-      <div class="stat"><div class="n" id="homes">—</div><div class="k">homes joined</div></div>
-      <div class="stat"><div class="n" id="members">—</div><div class="k">household members</div></div>
+      <div class="stat"><div class="n" id="homes">&mdash;</div><div class="k" data-t="homes">homes joined</div></div>
+      <div class="stat"><div class="n" id="members">&mdash;</div><div class="k" data-t="members">household members</div></div>
     </div>
 
-    <div class="maph"><span>Where we are</span><span id="regCount"></span></div>
-    <div class="map" id="map"></div>
+    <div class="maph"><span data-t="where">Where we are</span><span class="maplegend"><span data-t="fewer">fewer</span><span class="lgsw"></span><span data-t="more">more</span></span></div>
+    <div class="mapwrap" id="mapwrap"><div id="map" class="mapfall"></div><div class="maptip" id="tip"></div></div>
     <div class="regions" id="regions"></div>
 
-    <button class="btn" id="share" style="margin-top:20px">Share HeadCount 🌍</button>
-    <button class="btn ghost" id="replay">See the join screen again</button>
-    <div class="note">This counts people using HeadCount, not the whole planet. One phone counts once; household numbers are what people told us.</div>
+    <button class="btn" id="share" style="margin-top:20px" data-t="share">Share HeadCount</button>
+    <button class="btn ghost" id="replay" data-t="replay">See the join screen again</button>
+    <div class="note" data-t="foot">This counts people using HeadCount, not the whole planet. One phone counts once; household numbers are what people told us.</div>
   </section>
 </div>
 
@@ -188,136 +201,162 @@
   "use strict";
   var API="/api/count";
 
-  var REG={
-    US:["United States","🇺🇸",20,46], CA:["Canada","🇨🇦",18,30],
-    GB:["United Kingdom","🇬🇧",47,33], IN:["India","🇮🇳",68,55],
-    NG:["Nigeria","🇳🇬",49,60], BR:["Brazil","🇧🇷",33,70],
-    AU:["Australia","🇦🇺",85,78], DE:["Germany","🇩🇪",50,34],
-    JP:["Japan","🇯🇵",83,46], ZA:["South Africa","🇿🇦",53,78],
-    MX:["Mexico","🇲🇽",17,55], FR:["France","🇫🇷",47,37],
-    PK:["Pakistan","🇵🇰",66,50], PH:["Philippines","🇵🇭",82,58],
-    ZZ:["Elsewhere","🌍",50,50]
+  var I18N={
+    en:{name:"English",tagline:"how many humans are actually here?",j_title:"You're one of us",j_body:"No name, no email, no sign-up. One tap adds you to the living headcount of planet Earth.",j_btn:"Count me in",privacy:"We only store a random ID for your device and your country, never your name, contacts, or exact location.",h_title:"How many live with you?",h_body:"Count everyone in your home, including you.",h_sub:"shown separately from the headcount",h_btn:"Add us",w_label:"Humans on Earth right now",w_sub:"UN estimate, about 69 million more each year",us:"and here's us",counted:"You're counted",hc_label:"Humans on HeadCount",counting:"counting live...",homes:"homes joined",members:"household members",where:"Where we are",fewer:"fewer",more:"more",share:"Share HeadCount",replay:"See the join screen again",foot:"This counts people using HeadCount, not the whole planet. One phone counts once; household numbers are what people told us.",offline:"Can't reach the live count, trying again...",alone:"just you so far, share it!",rank:"you're human No. %s here"},
+    es:{name:"Espanol",tagline:"cuantos humanos hay realmente aqui?",j_title:"Eres uno de nosotros",j_body:"Sin nombre, sin correo, sin registro. Un toque te anade al recuento vivo del planeta Tierra.",j_btn:"Cuentame",privacy:"Solo guardamos un ID aleatorio de tu dispositivo y tu pais, nunca tu nombre, contactos ni ubicacion exacta.",h_title:"Cuantos viven contigo?",h_body:"Cuenta a todos en tu hogar, incluido tu.",h_sub:"se muestra aparte del recuento",h_btn:"Anadirnos",w_label:"Humanos en la Tierra ahora mismo",w_sub:"estimacion de la ONU, unos 69 millones mas al ano",us:"y aqui estamos nosotros",counted:"Estas contado",hc_label:"Humanos en HeadCount",counting:"contando en vivo...",homes:"hogares unidos",members:"miembros del hogar",where:"Donde estamos",fewer:"menos",more:"mas",share:"Compartir HeadCount",replay:"Ver la pantalla de inicio otra vez",foot:"Esto cuenta personas que usan HeadCount, no todo el planeta. Un telefono cuenta una vez.",offline:"No se puede conectar al recuento, reintentando...",alone:"solo tu por ahora, compartelo!",rank:"eres el humano No. %s aqui"},
+    hi:{name:"Hindi",tagline:"yahan asal mein kitne insaan hain?",j_title:"Aap hum mein se ek hain",j_body:"Koi naam nahin, koi email nahin, koi sign-up nahin. Ek tap aapko prithvi ki jeevit ginti mein jod deta hai.",j_btn:"Mujhe ginein",privacy:"Hum keval aapke device ki random ID aur aapka desh rakhte hain, kabhi naam, sampark ya satik sthan nahin.",h_title:"Aapke saath kitne log rehte hain?",h_body:"Apne ghar mein sabhi ko ginein, khud sahit.",h_sub:"ginti se alag dikhaya gaya",h_btn:"Humein jodein",w_label:"Abhi prithvi par insaan",w_sub:"UN anuman, har saal lagbhag 6.9 crore aur",us:"aur yeh rahe hum",counted:"Aap gine gaye",hc_label:"HeadCount par insaan",counting:"live ginti...",homes:"ghar jude",members:"ghar ke sadasya",where:"Hum kahan hain",fewer:"kam",more:"zyada",share:"HeadCount share karein",replay:"Shuruaati screen phir dekhein",foot:"Yeh HeadCount istemaal karne walon ko ginta hai, puri prithvi ko nahin.",offline:"Live ginti se sampark nahin, phir koshish...",alone:"abhi sirf aap, ise share karein!",rank:"yahan aap insaan No. %s hain"},
+    pt:{name:"Portugues",tagline:"quantos humanos estao realmente aqui?",j_title:"Voce e um de nos",j_body:"Sem nome, sem e-mail, sem cadastro. Um toque adiciona voce a contagem viva do planeta Terra.",j_btn:"Conte comigo",privacy:"Guardamos apenas um ID aleatorio do seu aparelho e seu pais, nunca seu nome, contatos ou local exato.",h_title:"Quantos moram com voce?",h_body:"Conte todos na sua casa, incluindo voce.",h_sub:"mostrado separado da contagem",h_btn:"Adicionar-nos",w_label:"Humanos na Terra agora",w_sub:"estimativa da ONU, cerca de 69 milhoes a mais por ano",us:"e aqui estamos nos",counted:"Voce foi contado",hc_label:"Humanos no HeadCount",counting:"contando ao vivo...",homes:"lares que entraram",members:"membros do lar",where:"Onde estamos",fewer:"menos",more:"mais",share:"Compartilhar HeadCount",replay:"Ver a tela inicial de novo",foot:"Isto conta quem usa o HeadCount, nao o planeta todo.",offline:"Sem conexao com a contagem, tentando...",alone:"so voce por enquanto, compartilhe!",rank:"voce e o humano No. %s aqui"},
+    fr:{name:"Francais",tagline:"combien d'humains sont vraiment ici?",j_title:"Vous etes des notres",j_body:"Pas de nom, pas d'e-mail, pas d'inscription. Un appui vous ajoute au decompte vivant de la planete.",j_btn:"Comptez-moi",privacy:"Nous ne gardons qu'un ID aleatoire de votre appareil et votre pays, jamais votre nom, contacts ou position exacte.",h_title:"Combien vivent avec vous?",h_body:"Comptez tous les habitants de votre foyer, vous compris.",h_sub:"affiche separement du decompte",h_btn:"Nous ajouter",w_label:"Humains sur Terre en ce moment",w_sub:"estimation de l'ONU, environ 69 millions de plus par an",us:"et nous voici",counted:"Vous etes compte",hc_label:"Humains sur HeadCount",counting:"comptage en direct...",homes:"foyers rejoints",members:"membres du foyer",where:"Ou nous sommes",fewer:"moins",more:"plus",share:"Partager HeadCount",replay:"Revoir l'ecran d'accueil",foot:"Ceci compte les utilisateurs de HeadCount, pas la planete entiere.",offline:"Impossible de joindre le decompte, nouvel essai...",alone:"juste vous pour l'instant, partagez!",rank:"vous etes l'humain No. %s ici"},
+    de:{name:"Deutsch",tagline:"wie viele Menschen sind wirklich hier?",j_title:"Du gehorst zu uns",j_body:"Kein Name, keine E-Mail, keine Anmeldung. Ein Tippen zahlt dich zur lebenden Zahlung der Erde.",j_btn:"Zahl mich mit",privacy:"Wir speichern nur eine zufallige Gerate-ID und dein Land, nie deinen Namen, Kontakte oder genauen Standort.",h_title:"Wie viele leben mit dir?",h_body:"Zahle alle in deinem Zuhause, dich eingeschlossen.",h_sub:"getrennt von der Zahlung angezeigt",h_btn:"Uns hinzufugen",w_label:"Menschen auf der Erde gerade jetzt",w_sub:"UN-Schatzung, etwa 69 Millionen mehr pro Jahr",us:"und hier sind wir",counted:"Du bist gezahlt",hc_label:"Menschen auf HeadCount",counting:"zahle live...",homes:"Haushalte dabei",members:"Haushaltsmitglieder",where:"Wo wir sind",fewer:"weniger",more:"mehr",share:"HeadCount teilen",replay:"Startbildschirm erneut ansehen",foot:"Dies zahlt HeadCount-Nutzer, nicht den ganzen Planeten.",offline:"Keine Verbindung zur Zahlung, erneut...",alone:"bisher nur du, teile es!",rank:"du bist Mensch Nr. %s hier"},
+    ru:{name:"Russkiy",tagline:"skolko lyudey na samom dele zdes?",j_title:"Ty odin iz nas",j_body:"Bez imeni, bez pochty, bez registratsii. Odno kasanie dobavlyaet tebya k zhivomu schetu planety.",j_btn:"Poschitat menya",privacy:"My hranim tolko sluchaynyy ID ustroystva i tvoyu stranu, nikogda imya, kontakty ili tochnoe mesto.",h_title:"Skolko chelovek zhivet s toboy?",h_body:"Poschitay vseh v dome, vklyuchaya sebya.",h_sub:"pokazano otdelno ot scheta",h_btn:"Dobavit nas",w_label:"Lyudey na Zemle pryamo seychas",w_sub:"otsenka OON, okolo 69 mln bolshe v god",us:"a vot i my",counted:"Ty poschitan",hc_label:"Lyudey v HeadCount",counting:"schet v pryamom efire...",homes:"domov prisoedinilos",members:"chlenov semi",where:"Gde my",fewer:"menshe",more:"bolshe",share:"Podelitsya HeadCount",replay:"Snova nachalnyy ekran",foot:"Eto schitaet polzovateley HeadCount, a ne vsyu planetu.",offline:"Net svyazi so schetom, povtor...",alone:"poka tolko ty, podelis!",rank:"ty chelovek No. %s zdes"},
+    id:{name:"Indonesia",tagline:"berapa banyak manusia yang benar-benar ada di sini?",j_title:"Kamu bagian dari kami",j_body:"Tanpa nama, tanpa email, tanpa daftar. Satu ketuk menambahkanmu ke hitungan hidup planet Bumi.",j_btn:"Hitung aku",privacy:"Kami hanya menyimpan ID acak perangkatmu dan negaramu, bukan nama, kontak, atau lokasi persismu.",h_title:"Berapa orang tinggal denganmu?",h_body:"Hitung semua orang di rumahmu, termasuk kamu.",h_sub:"ditampilkan terpisah dari hitungan",h_btn:"Tambahkan kami",w_label:"Manusia di Bumi sekarang",w_sub:"perkiraan PBB, sekitar 69 juta lebih per tahun",us:"dan inilah kita",counted:"Kamu terhitung",hc_label:"Manusia di HeadCount",counting:"menghitung langsung...",homes:"rumah bergabung",members:"anggota rumah",where:"Di mana kita",fewer:"lebih sedikit",more:"lebih banyak",share:"Bagikan HeadCount",replay:"Lihat layar awal lagi",foot:"Ini menghitung pengguna HeadCount, bukan seluruh planet.",offline:"Tak bisa terhubung ke hitungan, mencoba lagi...",alone:"baru kamu, bagikan!",rank:"kamu manusia No. %s di sini"},
+    zh:{name:"Zhongwen",tagline:"zhe li dao di you duo shao ren?",j_title:"ni shi wo men de yi yuan",j_body:"wu xu xing ming, you xiang huo zhu ce. qing dian yi xia, jiu ba ni jia ru di qiu de shi shi ren shu.",j_btn:"suan shang wo",privacy:"wo men zhi bao cun ni she bei de sui ji ID he ni de guo jia, jue bu bao cun xing ming, lian xi ren huo jing que wei zhi.",h_title:"he ni tong zhu de you ji ren?",h_body:"shu yi shu jia li suo you ren, bao kuo ni zi ji.",h_sub:"yu ren shu fen kai xian shi",h_btn:"jia ru wo men",w_label:"ci ke di qiu shang de ren lei",w_sub:"lian he guo gu ji, mei nian yue zeng jia 6900 wan",us:"zhe jiu shi wo men",counted:"yi ba ni suan shang",hc_label:"HeadCount shang de ren lei",counting:"shi shi ji shu...",homes:"yi jia ru de jia ting",members:"jia ting cheng yuan",where:"wo men zai na li",fewer:"jiao shao",more:"jiao duo",share:"fen xiang HeadCount",replay:"zai kan yi ci kai shi jie mian",foot:"zhe tong ji de shi HeadCount de yong hu, er fei zheng ge di qiu.",offline:"wu fa lian jie ji shu, chong shi zhong...",alone:"mu qian zhi you ni, kuai fen xiang!",rank:"ni shi zhe li di %s ge ren lei"},
+    ja:{name:"Nihongo",tagline:"koko ni wa jissai ni nan nin iru?",j_title:"anata mo nakama desu",j_body:"namae mo mail mo touroku mo fuyou. one tap de chikyuu no ikita ninzuu ni kuwawarimasu.",j_btn:"kazu ni irete",privacy:"tanmatsu no random ID to kuni dake wo hozon shimasu. namae renrakusaki seikaku na ichi wa hozon shimasen.",h_title:"issho ni sunde iru no wa nan nin?",h_body:"jibun wo fukume, ie no zen'in wo kazoete kudasai.",h_sub:"ninzuu to wa betsu ni hyouji saremasu",h_btn:"tsuika suru",w_label:"ima chikyuu ni iru jinrui",w_sub:"kokuren suikei, mainen yaku 6900 man nin zouka",us:"soshite kore ga watashitachi",counted:"count saremashita",hc_label:"HeadCount no jinrui",counting:"live shuukei chuu...",homes:"sanka shita setai",members:"setai no ninzuu",where:"watashitachi no basho",fewer:"sukunai",more:"ooi",share:"HeadCount wo share",replay:"saisho no gamen wo mou ichido",foot:"kore wa HeadCount riyousha no kazu de, chikyuu zentai de wa arimasen.",offline:"shuukei ni setsuzoku dekimasen, saishikou chuu...",alone:"ima wa anata dake, share shiyou!",rank:"anata wa koko de %s nin me no jinrui"}
   };
-  function myRegion(){
-    try{
-      var r=(Intl.DateTimeFormat().resolvedOptions().locale||navigator.language||"").toUpperCase();
-      var m=r.match(/[-_]([A-Z]{2})\b/); if(m&&REG[m[1]]) return m[1];
-    }catch(e){}
-    return "ZZ";
-  }
-  function deviceId(){
-    var k="headcount_id",v=null;
-    try{v=localStorage.getItem(k);}catch(e){}
-    if(!v){ v=(self.crypto&&crypto.randomUUID)?crypto.randomUUID():"d-"+Date.now().toString(36)+Math.random().toString(36).slice(2,10);
-      try{localStorage.setItem(k,v);}catch(e){} }
-    return v;
-  }
+
+  var FLAG={US:"\uD83C\uDDFA\uD83C\uDDF8",CA:"\uD83C\uDDE8\uD83C\uDDE6",GB:"\uD83C\uDDEC\uD83C\uDDE7",IN:"\uD83C\uDDEE\uD83C\uDDF3",NG:"\uD83C\uDDF3\uD83C\uDDEC",BR:"\uD83C\uDDE7\uD83C\uDDF7",AU:"\uD83C\uDDE6\uD83C\uDDFA",DE:"\uD83C\uDDE9\uD83C\uDDEA",JP:"\uD83C\uDDEF\uD83C\uDDF5",ZA:"\uD83C\uDDFF\uD83C\uDDE6",MX:"\uD83C\uDDF2\uD83C\uDDFD",FR:"\uD83C\uDDEB\uD83C\uDDF7",PK:"\uD83C\uDDF5\uD83C\uDDF0",PH:"\uD83C\uDDF5\uD83C\uDDED",ID:"\uD83C\uDDEE\uD83C\uDDE9",RU:"\uD83C\uDDF7\uD83C\uDDFA",CN:"\uD83C\uDDE8\uD83C\uDDF3",ES:"\uD83C\uDDEA\uD83C\uDDF8",ZZ:"\uD83C\uDF0D"};
+  function flagOf(cc){ if(FLAG[cc])return FLAG[cc]; if(/^[A-Z]{2}$/.test(cc)) return String.fromCodePoint(0x1F1E6+cc.charCodeAt(0)-65,0x1F1E6+cc.charCodeAt(1)-65); return "\uD83C\uDF0D"; }
+
+  var curLang="en", fmt;
+  function nameOf(cc){ try{ var dn=new Intl.DisplayNames([curLang,"en"],{type:"region"}); return dn.of(cc)||cc; }catch(e){ return cc; } }
+  function pickLang(){ try{ var l=(navigator.language||"en").slice(0,2).toLowerCase(); return I18N[l]?l:"en"; }catch(e){ return "en"; } }
+  function tr(k){ return (I18N[curLang]&&I18N[curLang][k])||I18N.en[k]||k; }
+  function setFmt(){ try{ fmt=new Intl.NumberFormat(curLang);}catch(e){ fmt=new Intl.NumberFormat("en-US"); } }
+  function applyLang(l){ curLang=I18N[l]?l:"en"; setFmt(); document.documentElement.lang=curLang;
+    document.querySelectorAll("[data-t]").forEach(function(el){ el.textContent=tr(el.getAttribute("data-t")); });
+    try{ localStorage.setItem("hc_lang",curLang); }catch(e){} if(last) paint(last); tickWorld(); }
+
+  function deviceId(){var k="headcount_id",v=null;try{v=localStorage.getItem(k);}catch(e){}
+    if(!v){v=(self.crypto&&crypto.randomUUID)?crypto.randomUUID():"d-"+Date.now().toString(36)+Math.random().toString(36).slice(2,10);try{localStorage.setItem(k,v);}catch(e){}}return v;}
   function joinedBefore(){try{return localStorage.getItem("headcount_joined")==="1";}catch(e){return false;}}
   function markJoined(h){try{localStorage.setItem("headcount_joined","1");localStorage.setItem("headcount_hh",h);}catch(e){}}
   function savedHh(){try{return +localStorage.getItem("headcount_hh")||3;}catch(e){return 3;}}
+  function localeCountry(){try{var r=(Intl.DateTimeFormat().resolvedOptions().locale||navigator.language||"").toUpperCase();var m=r.match(/[-_]([A-Z]{2})\b/);return m?m[1]:"ZZ";}catch(e){return "ZZ";}}
 
-  var ID=deviceId(), MYREG=myRegion(), hh=3, fmt=new Intl.NumberFormat("en-US");
+  var ID=deviceId(), MYREG=localeCountry(), hh=3;
 
   function show(id){["s1","s2","s3"].forEach(function(s){document.getElementById(s).classList.toggle("on",s===id);});window.scrollTo(0,0);}
-
   document.getElementById("joinBtn").onclick=function(){ show("s2"); };
   document.getElementById("replay").onclick=function(){ show("s1"); };
   var hhEl=document.getElementById("hh");
   document.getElementById("plus").onclick=function(){ hh=Math.min(30,hh+1); hhEl.textContent=hh; };
   document.getElementById("minus").onclick=function(){ hh=Math.max(1,hh-1); hhEl.textContent=hh; };
+  document.getElementById("doneBtn").onclick=function(){ markJoined(hh); show("s3"); confetti(); join(); };
 
-  document.getElementById("doneBtn").onclick=function(){
-    markJoined(hh); show("s3"); confetti(); join();
-  };
-
-  // ---- world population clock (UN WPP 2024 medium variant) ----
   var UN_BASE=8300678395, UN_AT=Date.UTC(2026,6,1), UN_PS=68870000/(365.2425*24*3600);
   var worldEl=document.getElementById("world");
-  function tickWorld(){ if(!worldEl)return; var now=Math.round(UN_BASE+((Date.now()-UN_AT)/1000)*UN_PS); worldEl.textContent=fmt.format(now); }
-  tickWorld(); setInterval(tickWorld,1000);
+  function tickWorld(){ if(!worldEl||!fmt)return; worldEl.textContent=fmt.format(Math.round(UN_BASE+((Date.now()-UN_AT)/1000)*UN_PS)); }
 
-  // ---- shared count via the Netlify function ----
-  var last={people:0,members:0,regions:{}}, myRank=0;
-  function animateTo(el,target){
-    var cur=+el.getAttribute("data-v")||0, steps=16,i=0,diff=target-cur;
-    if(diff===0){el.textContent=fmt.format(target);return;}
-    clearInterval(el._t);
-    el._t=setInterval(function(){ i++; el.textContent=fmt.format(Math.round(cur+diff*(i/steps)));
-      if(i>=steps){el.textContent=fmt.format(target);el.setAttribute("data-v",target);clearInterval(el._t);} },26);
-  }
-  function offline(on){ document.getElementById("offline").style.display=on?"block":"none"; }
+  var last=null, myRank=0;
+  function animateTo(el,target){var cur=+el.getAttribute("data-v")||0,steps=16,i=0,diff=target-cur;
+    if(diff===0){el.textContent=fmt.format(target);return;}clearInterval(el._t);
+    el._t=setInterval(function(){i++;el.textContent=fmt.format(Math.round(cur+diff*(i/steps)));
+      if(i>=steps){el.textContent=fmt.format(target);el.setAttribute("data-v",target);clearInterval(el._t);}},26);}
+  function offline(on){document.getElementById("offline").style.display=on?"block":"none";}
 
   function paint(d){
     last=d;
     animateTo(document.getElementById("people"), d.people||0);
     document.getElementById("homes").textContent=fmt.format(d.people||0);
     document.getElementById("members").textContent=fmt.format(d.members||0);
-    document.getElementById("liveTxt").textContent=(d.people<=1)?"just you so far — share it!":"counting live";
+    document.getElementById("liveTxt").textContent=(d.people<=1)?tr("alone"):tr("counting");
     var rk=document.getElementById("rank");
-    if(myRank>0){ var suff=(myRank%10===1&&myRank%100!==11)?"st":(myRank%10===2&&myRank%100!==12)?"nd":(myRank%10===3&&myRank%100!==13)?"rd":"th";
-      rk.textContent="🎉 you're human #"+fmt.format(myRank)+suff+" here"; } else rk.textContent="";
+    rk.textContent = myRank>0 ? tr("rank").replace("%s",fmt.format(myRank)) : "";
 
     var regs=d.regions||{}, keys=Object.keys(regs).sort(function(a,b){return regs[b]-regs[a];});
     var max=keys.length?regs[keys[0]]:1;
-    document.getElementById("regCount").textContent=keys.length+(keys.length===1?" region":" regions");
     var rg=document.getElementById("regions"); rg.innerHTML="";
-    keys.slice(0,6).forEach(function(r){ var info=REG[r]||REG.ZZ; var row=document.createElement("div"); row.className="reg";
-      row.innerHTML='<span class="flag">'+info[1]+'</span><span class="rn">'+info[0]+'</span>'+
+    keys.slice(0,8).forEach(function(r){var row=document.createElement("div");row.className="reg";
+      row.innerHTML='<span class="flag">'+flagOf(r)+'</span><span class="rn">'+nameOf(r)+'</span>'+
         '<span class="bar" style="width:'+Math.max(10,(regs[r]/max)*90)+'px"></span><span class="rc">'+fmt.format(regs[r])+'</span>';
-      rg.appendChild(row); });
-
-    var map=document.getElementById("map"); map.innerHTML="";
-    keys.forEach(function(r){ var info=REG[r]||REG.ZZ, pins=Math.min(6,Math.max(1,Math.round((regs[r]/max)*5)));
-      for(var k=0;k<pins;k++){ var p=document.createElement("div"); p.className="pin";
-        p.style.left=(info[2]+(Math.random()*10-5))+"%"; p.style.top=(info[3]+(Math.random()*10-5))+"%"; map.appendChild(p); } });
-    if(joinedBefore()){ var mi=REG[MYREG]||REG.ZZ; var mp=document.createElement("div"); mp.className="pin me";
-      mp.style.left=mi[2]+"%"; mp.style.top=mi[3]+"%"; mp.title="you"; map.appendChild(mp); }
+      rg.appendChild(row);});
+    paintMap(regs,max);
   }
 
-  function get(){
-    fetch(API,{cache:"no-store"}).then(function(r){return r.json();}).then(function(d){ offline(false); paint(d); })
-      .catch(function(){ offline(true); });
-  }
-  function join(){
-    fetch(API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({id:ID,hh:hh,reg:MYREG})})
-      .then(function(r){return r.json();}).then(function(d){
-        offline(false);
-        if(!myRank && d.you){ myRank=d.people; }  // first join: our number is the current total
-        paint(d);
-      }).catch(function(){ offline(true); });
+  function colorFor(n,max){ if(!n) return "var(--land)"; var tn=Math.min(1,Math.log(1+n)/Math.log(1+(max||1)));
+    var c1=[27,39,72],c2=[77,163,255],c3=[126,240,200];
+    var a=tn<.5?c1:c2,b=tn<.5?c2:c3,k=tn<.5?tn*2:(tn-.5)*2;
+    var rgb=[0,1,2].map(function(i){return Math.round(a[i]+(b[i]-a[i])*k);});
+    return "rgb("+rgb[0]+","+rgb[1]+","+rgb[2]+")"; }
+
+  var mapReady=false, mapPaths={}, mapSvg=null;
+  function paintMap(regs,max){
+    if(mapReady){ for(var iso in mapPaths){ var el=mapPaths[iso], n=regs[iso]||0;
+        el.setAttribute("fill",colorFor(n,max)); el.classList.toggle("me", joinedBefore() && iso===MYREG); } return; }
+    var map=document.getElementById("map"); if(!map||map.dataset.mode==="svg")return; map.innerHTML="";
+    var POS={US:[20,46],CA:[18,30],GB:[47,33],IN:[68,55],NG:[49,60],BR:[33,70],AU:[85,78],DE:[50,34],JP:[83,46],ZA:[53,78],MX:[17,55],FR:[47,37],PK:[66,50],PH:[82,58],ID:[80,64],RU:[70,26],CN:[76,45],ZZ:[50,50]};
+    Object.keys(regs).forEach(function(r){var p=POS[r]||POS.ZZ,n=Math.min(6,Math.max(1,Math.round((regs[r]/max)*5)));
+      for(var k=0;k<n;k++){var d=document.createElement("div");d.className="pin";d.style.left=(p[0]+(Math.random()*10-5))+"%";d.style.top=(p[1]+(Math.random()*10-5))+"%";map.appendChild(d);}});
   }
 
-  // ---- share ----
+  function loadScript(src,cb){var s=document.createElement("script");s.src=src;s.onload=cb;s.onerror=function(){};document.head.appendChild(s);}
+  function loadMap(){
+    loadScript("https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js",function(){
+      loadScript("https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js",function(){
+        fetch("https://cdn.jsdelivr.net/npm/world-atlas@2.0.2/countries-110m.json").then(function(r){return r.json();})
+          .then(function(topo){ buildMap(topo); }).catch(function(){});
+      });
+    });
+  }
+  function buildMap(topo){
+    try{
+      if(!self.d3||!self.topojson)return;
+      var feats=topojson.feature(topo,topo.objects.countries).features;
+      var W=500,H=250, proj=d3.geoNaturalEarth1().fitSize([W,H],{type:"FeatureCollection",features:feats}), path=d3.geoPath(proj);
+      var ns="http://www.w3.org/2000/svg", svg=document.createElementNS(ns,"svg");
+      svg.setAttribute("viewBox","0 0 "+W+" "+H); svg.setAttribute("width","100%");
+      feats.forEach(function(f){
+        var p=document.createElementNS(ns,"path"); p.setAttribute("d",path(f)); p.setAttribute("class","country");
+        var iso=NUM2ISO[String(f.id)]||null; if(iso){ p.setAttribute("data-iso",iso); mapPaths[iso]=p;
+          p.addEventListener("click",function(){ tipFor(f,iso,path); }); }
+        svg.appendChild(p);
+      });
+      var wrap=document.getElementById("map"); wrap.className=""; wrap.dataset.mode="svg"; wrap.innerHTML=""; wrap.appendChild(svg);
+      mapSvg=svg; mapReady=true; if(last) paint(last);
+    }catch(e){}
+  }
+  function tipFor(f,iso,path){
+    var tip=document.getElementById("tip"); if(!tip||!mapSvg)return;
+    var c=path.centroid(f), box=mapSvg.getBoundingClientRect(), sx=box.width/500, sy=box.height/250;
+    tip.style.left=(c[0]*sx)+"px"; tip.style.top=(c[1]*sy)+"px";
+    var n=(last&&last.regions&&last.regions[iso])||0;
+    tip.textContent=nameOf(iso)+": "+fmt.format(n);
+    tip.classList.add("on"); clearTimeout(tip._h); tip._h=setTimeout(function(){tip.classList.remove("on");},1800);
+  }
+
+  var NUM2ISO={"4":"AF","8":"AL","12":"DZ","24":"AO","32":"AR","36":"AU","40":"AT","50":"BD","56":"BE","68":"BO","76":"BR","100":"BG","104":"MM","108":"BI","116":"KH","120":"CM","124":"CA","144":"LK","148":"TD","152":"CL","156":"CN","170":"CO","178":"CG","180":"CD","188":"CR","191":"HR","192":"CU","203":"CZ","208":"DK","214":"DO","218":"EC","818":"EG","222":"SV","231":"ET","246":"FI","250":"FR","266":"GA","268":"GE","276":"DE","288":"GH","300":"GR","320":"GT","324":"GN","332":"HT","340":"HN","348":"HU","356":"IN","360":"ID","364":"IR","368":"IQ","372":"IE","376":"IL","380":"IT","384":"CI","388":"JM","392":"JP","400":"JO","398":"KZ","404":"KE","408":"KP","410":"KR","414":"KW","417":"KG","418":"LA","422":"LB","426":"LS","430":"LR","434":"LY","440":"LT","450":"MG","454":"MW","458":"MY","466":"ML","478":"MR","484":"MX","496":"MN","498":"MD","504":"MA","508":"MZ","516":"NA","524":"NP","528":"NL","554":"NZ","558":"NI","562":"NE","566":"NG","578":"NO","586":"PK","591":"PA","598":"PG","600":"PY","604":"PE","608":"PH","616":"PL","620":"PT","624":"GW","626":"TL","634":"QA","642":"RO","643":"RU","646":"RW","682":"SA","686":"SN","688":"RS","694":"SL","702":"SG","703":"SK","704":"VN","705":"SI","706":"SO","710":"ZA","716":"ZW","724":"ES","728":"SS","729":"SD","748":"SZ","752":"SE","756":"CH","760":"SY","762":"TJ","764":"TH","768":"TG","784":"AE","788":"TN","792":"TR","795":"TM","800":"UG","804":"UA","807":"MK","818":"EG","826":"GB","834":"TZ","840":"US","854":"BF","858":"UY","860":"UZ","862":"VE","887":"YE","894":"ZM"};
+
+  function get(){ fetch(API,{cache:"no-store"}).then(function(r){return r.json();}).then(function(d){offline(false);paint(d);}).catch(function(){offline(true);}); }
+  function join(){ fetch(API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({id:ID,hh:hh,reg:MYREG})})
+    .then(function(r){return r.json();}).then(function(d){offline(false); if(!myRank){ myRank=d.people; } paint(d);}).catch(function(){offline(true);}); }
+
   document.getElementById("share").onclick=async function(){
-    var n=document.getElementById("people").textContent||"lots of";
-    var txt="I'm one of "+n+" humans counted on HeadCount 🌍 How many of us are actually here? Add yourself:";
+    var n=document.getElementById("people").textContent||"";
+    var txt=tr("hc_label")+": "+n+". "+tr("tagline")+" "+location.href;
     try{ if(navigator.share){ await navigator.share({title:"HeadCount",text:txt,url:location.href}); return; } }catch(e){ return; }
-    try{ await navigator.clipboard.writeText(txt+" "+location.href); var b=this; b.textContent="Copied! ✓"; setTimeout(function(){b.textContent="Share HeadCount 🌍";},1500); }catch(e){}
+    try{ await navigator.clipboard.writeText(txt); var b=this; b.textContent="\u2713"; setTimeout(function(){b.textContent=tr("share");},1200); }catch(e){}
   };
 
-  // ---- confetti (tiny, no library) ----
   function confetti(){
     var c=document.getElementById("confetti"), x=c.getContext("2d");
-    var W=c.width=innerWidth, H=c.height=innerHeight;
-    var cols=["#7ef0c8","#4da3ff","#b98bff","#ffd27e","#ff8fa3"], P=[];
-    for(var i=0;i<140;i++) P.push({x:W/2,y:H*0.34,vx:(Math.random()-.5)*12,vy:Math.random()*-13-4,
-      g:.32+Math.random()*.1,s:5+Math.random()*6,c:cols[i%cols.length],r:Math.random()*6,vr:(Math.random()-.5)*.4,life:0});
+    var W=c.width=innerWidth, H=c.height=innerHeight, cols=["#7ef0c8","#4da3ff","#b98bff","#ffd27e","#ff8fa3"], P=[];
+    for(var i=0;i<150;i++) P.push({x:W/2,y:H*0.32,vx:(Math.random()-.5)*13,vy:Math.random()*-14-4,g:.33+Math.random()*.1,s:5+Math.random()*6,c:cols[i%cols.length],r:Math.random()*6,vr:(Math.random()-.5)*.4,life:0});
     var t0=Date.now();
-    (function frame(){
-      x.clearRect(0,0,W,H); var done=true;
-      for(var i=0;i<P.length;i++){var p=P[i]; p.vy+=p.g; p.x+=p.vx; p.y+=p.vy; p.r+=p.vr; p.life++;
-        if(p.y<H+20){done=false;} x.save(); x.translate(p.x,p.y); x.rotate(p.r);
-        x.globalAlpha=Math.max(0,1-p.life/120); x.fillStyle=p.c; x.fillRect(-p.s/2,-p.s/2,p.s,p.s*0.6); x.restore(); }
-      if(!done && Date.now()-t0<2600) requestAnimationFrame(frame); else x.clearRect(0,0,W,H);
-    })();
+    (function frame(){ x.clearRect(0,0,W,H); var done=true;
+      for(var i=0;i<P.length;i++){var p=P[i];p.vy+=p.g;p.x+=p.vx;p.y+=p.vy;p.r+=p.vr;p.life++;
+        if(p.y<H+20)done=false;x.save();x.translate(p.x,p.y);x.rotate(p.r);x.globalAlpha=Math.max(0,1-p.life/120);x.fillStyle=p.c;x.fillRect(-p.s/2,-p.s/2,p.s,p.s*.6);x.restore();}
+      if(!done&&Date.now()-t0<2600)requestAnimationFrame(frame);else x.clearRect(0,0,W,H);})();
   }
 
-  // ---- boot ----
+  var saved=null; try{saved=localStorage.getItem("hc_lang");}catch(e){}
+  curLang=saved&&I18N[saved]?saved:pickLang(); setFmt();
+  var sel=document.getElementById("lang");
+  Object.keys(I18N).forEach(function(l){var o=document.createElement("option");o.value=l;o.textContent=I18N[l].name;if(l===curLang)o.selected=true;sel.appendChild(o);});
+  sel.onchange=function(){ applyLang(this.value); };
+  applyLang(curLang);
+  tickWorld(); setInterval(tickWorld,1000);
   if(joinedBefore()){ hh=savedHh(); hhEl.textContent=hh; show("s3"); }
-  get();
-  setInterval(get,5000);           // refresh the shared count every 5s
-  // if returning visitor, re-assert presence once so their region stays counted
-  if(joinedBefore()){ join(); }
+  loadMap(); get(); setInterval(get,5000); if(joinedBefore()) join();
 })();
 </script>
 </body>
