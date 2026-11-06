@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>HeadCount — how many humans are actually here?</title>
+<meta name="description" content="A live, anonymous worldwide headcount. Tap once and watch the number grow.">
+<meta property="og:title" content="HeadCount">
+<meta property="og:description" content="How many humans are actually here? Tap in and find out.">
+<style>
+  :root{
+    color-scheme: dark;
+    --bg:#070b18; --card:#121a33; --card2:#0d1430;
+    --ink:#f3f6ff; --mut:#9fb0d8; --mut2:#6f80ab;
+    --accent:#4da3ff; --mint:#7ef0c8; --violet:#b98bff; --line:#223056; --good:#2bd4a0;
+    box-sizing:border-box;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,system-ui,sans-serif;
+    color:var(--ink);
+    background:
+      radial-gradient(1100px 560px at 50% -12%, #1b2857 0%, rgba(27,40,87,0) 62%),
+      radial-gradient(800px 500px at 85% 110%, #2a1b4d 0%, rgba(42,27,77,0) 55%),
+      var(--bg);
+    min-height:100%;
+    -webkit-tap-highlight-color:transparent;
+    overflow-x:hidden;
+    padding-top:env(safe-area-inset-top,0px);
+    padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  .wrap{max-width:480px;margin:0 auto;padding:22px 18px 46px;position:relative;z-index:1}
+
+  .brand{display:flex;align-items:center;gap:10px;justify-content:center;margin:4px 0 2px}
+  .globe{width:34px;height:34px;border-radius:50%;position:relative;
+    background:radial-gradient(circle at 32% 28%, #7ef0c8 0%, #4da3ff 52%, #2b63d6 100%);
+    box-shadow:0 0 26px rgba(77,163,255,.6);animation:spin 8s linear infinite}
+  .globe::after{content:"";position:absolute;inset:0;border-radius:50%;
+    background:repeating-linear-gradient(90deg,rgba(255,255,255,.14) 0 2px,transparent 2px 7px)}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .brand h1{font-size:21px;margin:0;font-weight:800;letter-spacing:.3px}
+  .tag{text-align:center;color:var(--mut);font-size:13px;margin:6px 0 22px}
+
+  .screen{display:none;animation:rise .4s cubic-bezier(.2,.8,.2,1)}
+  .screen.on{display:block}
+  @keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+
+  .card{background:linear-gradient(180deg,var(--card) 0%,var(--card2) 100%);
+    border:1px solid var(--line);border-radius:24px;padding:28px 22px;text-align:center}
+  .emoji{font-size:52px;line-height:1;animation:float 3.6s ease-in-out infinite}
+  @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+  .big{font-size:21px;font-weight:800;margin:16px 0 8px}
+  .card p{color:var(--mut);font-size:14px;line-height:1.6;margin:0 auto 24px;max-width:280px}
+
+  .btn{display:block;width:100%;border:0;border-radius:18px;padding:17px;
+    font-size:17px;font-weight:800;color:#04122b;cursor:pointer;
+    background:linear-gradient(90deg,#7ef0c8,#4da3ff);
+    box-shadow:0 12px 30px rgba(77,163,255,.4);transition:transform .08s,box-shadow .2s}
+  .btn:active{transform:scale(.97)}
+  .btn.big-tap{font-size:19px;padding:20px;animation:breathe 2.6s ease-in-out infinite}
+  @keyframes breathe{0%,100%{box-shadow:0 12px 30px rgba(77,163,255,.4)}50%{box-shadow:0 12px 40px rgba(126,240,200,.6)}}
+  .btn.ghost{background:transparent;color:var(--mut);box-shadow:none;font-weight:700;font-size:15px;padding:12px;margin-top:4px}
+
+  .stepper{display:flex;align-items:center;justify-content:center;gap:24px;margin:10px 0 6px}
+  .round{width:62px;height:62px;border-radius:50%;border:1px solid var(--line);
+    background:var(--card);color:var(--ink);font-size:32px;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;transition:transform .1s,border-color .15s}
+  .round:active{transform:scale(.88);border-color:var(--accent)}
+  .pick{font-size:58px;font-weight:900;min-width:76px;text-align:center;
+    background:linear-gradient(90deg,#7ef0c8,#4da3ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .sub{color:var(--mut2);font-size:12px;text-align:center;margin:2px 0 24px}
+
+  .world{background:linear-gradient(180deg,var(--card) 0%,var(--card2) 100%);
+    border:1px solid var(--line);border-radius:22px;padding:20px 16px;text-align:center;margin:0 0 22px}
+  .world .wl{color:var(--mut);font-size:11px;letter-spacing:1.6px;text-transform:uppercase}
+  .world .wn{font-size:clamp(32px,11vw,46px);font-weight:900;letter-spacing:.5px;font-variant-numeric:tabular-nums;margin:8px 0 2px;
+    background:linear-gradient(90deg,#b98bff,#4da3ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .world .ws{color:var(--mut2);font-size:11px}
+
+  .divider{display:flex;align-items:center;gap:12px;color:var(--mut2);font-size:11px;letter-spacing:1.4px;text-transform:uppercase;margin:2px 0 16px}
+  .divider::before,.divider::after{content:"";flex:1;height:1px;background:var(--line)}
+
+  .me-badge{display:inline-flex;align-items:center;gap:7px;background:rgba(43,212,160,.14);
+    color:var(--good);font-size:12.5px;font-weight:700;padding:7px 14px;border-radius:999px;margin:0 auto 14px}
+  .label{color:var(--mut);font-size:12px;letter-spacing:1.6px;text-transform:uppercase;text-align:center}
+  .count{font-size:clamp(46px,16vw,66px);font-weight:900;text-align:center;letter-spacing:1px;font-variant-numeric:tabular-nums;margin:8px 0 2px;
+    background:linear-gradient(90deg,#7ef0c8,#4da3ff 55%,#b98bff);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .rankline{text-align:center;color:var(--mint);font-size:13px;font-weight:700;margin:0 0 4px;min-height:17px}
+  .live{display:flex;align-items:center;gap:7px;justify-content:center;color:var(--mut);font-size:12px;margin:6px 0 20px}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--good);animation:pulse 1.6s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(43,212,160,.6)}70%{box-shadow:0 0 0 10px rgba(43,212,160,0)}100%{box-shadow:0 0 0 0 rgba(43,212,160,0)}}
+
+  .stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:0 0 18px}
+  .stat{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px}
+  .stat .n{font-size:24px;font-weight:800;font-variant-numeric:tabular-nums}
+  .stat .k{color:var(--mut);font-size:11.5px;margin-top:3px}
+
+  .maph{color:var(--mut);font-size:12px;margin:4px 2px 8px;display:flex;justify-content:space-between}
+  .map{position:relative;height:160px;border-radius:18px;border:1px solid var(--line);background:var(--card2);overflow:hidden}
+  .pin{position:absolute;width:8px;height:8px;border-radius:50%;background:var(--mint);
+    box-shadow:0 0 12px rgba(126,240,200,.9);transform:translate(-50%,-50%);animation:pop .5s ease}
+  .pin.me{background:#fff;box-shadow:0 0 0 5px rgba(77,163,255,.4),0 0 16px #fff;width:12px;height:12px}
+  @keyframes pop{from{transform:translate(-50%,-50%) scale(0)}to{transform:translate(-50%,-50%) scale(1)}}
+
+  .regions{margin-top:18px}
+  .reg{display:flex;align-items:center;gap:10px;padding:10px 2px;border-bottom:1px solid var(--line)}
+  .reg:last-child{border-bottom:0}
+  .reg .flag{font-size:18px;width:24px;text-align:center}
+  .reg .rn{flex:1;font-size:14px}
+  .reg .bar{height:6px;border-radius:3px;background:linear-gradient(90deg,#4da3ff,#7ef0c8);min-width:4px;transition:width .5s}
+  .reg .rc{color:var(--mut);font-size:13px;font-variant-numeric:tabular-nums;min-width:30px;text-align:right}
+
+  .note{color:var(--mut2);font-size:11.5px;line-height:1.6;text-align:center;margin:22px 8px 0}
+  .offline{display:none;text-align:center;color:#ffd27e;font-size:12px;background:rgba(255,210,126,.1);border-radius:14px;padding:10px;margin:0 0 16px}
+
+  canvas#confetti{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:50}
+</style>
+</head>
+<body>
+<canvas id="confetti" aria-hidden="true"></canvas>
+<div class="wrap">
+  <div class="brand"><div class="globe" aria-hidden="true"></div><h1>HeadCount</h1></div>
+  <div class="tag">how many humans are actually here?</div>
+
+  <div id="offline" class="offline">Can't reach the live count right now — trying again…</div>
+
+  <!-- 1: JOIN -->
+  <section id="s1" class="screen on">
+    <div class="card">
+      <div class="emoji">🌍</div>
+      <div class="big">You're one of us</div>
+      <p>No name, no email, no sign-up. One tap adds you to the living headcount of planet Earth.</p>
+      <button class="btn big-tap" id="joinBtn">Count me in</button>
+    </div>
+    <div class="note">We only store a random ID for your device and a rough region — never your name, contacts, or exact location.</div>
+  </section>
+
+  <!-- 2: HOUSEHOLD -->
+  <section id="s2" class="screen">
+    <div class="card">
+      <div class="emoji">🏠</div>
+      <div class="big">How many live with you?</div>
+      <p>Count everyone in your home, including you.</p>
+      <div class="stepper">
+        <button class="round" id="minus" aria-label="fewer">−</button>
+        <div class="pick" id="hh">3</div>
+        <button class="round" id="plus" aria-label="more">+</button>
+      </div>
+      <div class="sub">shown separately from the headcount</div>
+      <button class="btn" id="doneBtn">Add us 🎉</button>
+    </div>
+  </section>
+
+  <!-- 3: LIVE -->
+  <section id="s3" class="screen">
+    <div class="world">
+      <div class="wl">Humans on Earth right now</div>
+      <div class="wn" id="world">—</div>
+      <div class="ws">UN estimate · about 69 million more each year</div>
+    </div>
+
+    <div class="divider">and here's us</div>
+
+    <div style="text-align:center"><span class="me-badge">✓ You're counted</span></div>
+    <div class="label">Humans on HeadCount</div>
+    <div class="count" id="people">—</div>
+    <div class="rankline" id="rank"></div>
+    <div class="live"><span class="dot"></span><span id="liveTxt">counting live…</span></div>
+
+    <div class="stats">
+      <div class="stat"><div class="n" id="homes">—</div><div class="k">homes joined</div></div>
+      <div class="stat"><div class="n" id="members">—</div><div class="k">household members</div></div>
+    </div>
+
+    <div class="maph"><span>Where we are</span><span id="regCount"></span></div>
+    <div class="map" id="map"></div>
+    <div class="regions" id="regions"></div>
+
+    <button class="btn" id="share" style="margin-top:20px">Share HeadCount 🌍</button>
+    <button class="btn ghost" id="replay">See the join screen again</button>
+    <div class="note">This counts people using HeadCount, not the whole planet. One phone counts once; household numbers are what people told us.</div>
+  </section>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var API="/api/count";
+
+  var REG={
+    US:["United States","🇺🇸",20,46], CA:["Canada","🇨🇦",18,30],
+    GB:["United Kingdom","🇬🇧",47,33], IN:["India","🇮🇳",68,55],
+    NG:["Nigeria","🇳🇬",49,60], BR:["Brazil","🇧🇷",33,70],
+    AU:["Australia","🇦🇺",85,78], DE:["Germany","🇩🇪",50,34],
+    JP:["Japan","🇯🇵",83,46], ZA:["South Africa","🇿🇦",53,78],
+    MX:["Mexico","🇲🇽",17,55], FR:["France","🇫🇷",47,37],
+    PK:["Pakistan","🇵🇰",66,50], PH:["Philippines","🇵🇭",82,58],
+    ZZ:["Elsewhere","🌍",50,50]
+  };
+  function myRegion(){
+    try{
+      var r=(Intl.DateTimeFormat().resolvedOptions().locale||navigator.language||"").toUpperCase();
+      var m=r.match(/[-_]([A-Z]{2})\b/); if(m&&REG[m[1]]) return m[1];
+    }catch(e){}
+    return "ZZ";
+  }
+  function deviceId(){
+    var k="headcount_id",v=null;
+    try{v=localStorage.getItem(k);}catch(e){}
+    if(!v){ v=(self.crypto&&crypto.randomUUID)?crypto.randomUUID():"d-"+Date.now().toString(36)+Math.random().toString(36).slice(2,10);
+      try{localStorage.setItem(k,v);}catch(e){} }
+    return v;
+  }
+  function joinedBefore(){try{return localStorage.getItem("headcount_joined")==="1";}catch(e){return false;}}
+  function markJoined(h){try{localStorage.setItem("headcount_joined","1");localStorage.setItem("headcount_hh",h);}catch(e){}}
+  function savedHh(){try{return +localStorage.getItem("headcount_hh")||3;}catch(e){return 3;}}
+
+  var ID=deviceId(), MYREG=myRegion(), hh=3, fmt=new Intl.NumberFormat("en-US");
+
+  function show(id){["s1","s2","s3"].forEach(function(s){document.getElementById(s).classList.toggle("on",s===id);});window.scrollTo(0,0);}
+
+  document.getElementById("joinBtn").onclick=function(){ show("s2"); };
+  document.getElementById("replay").onclick=function(){ show("s1"); };
+  var hhEl=document.getElementById("hh");
+  document.getElementById("plus").onclick=function(){ hh=Math.min(30,hh+1); hhEl.textContent=hh; };
+  document.getElementById("minus").onclick=function(){ hh=Math.max(1,hh-1); hhEl.textContent=hh; };
+
+  document.getElementById("doneBtn").onclick=function(){
+    markJoined(hh); show("s3"); confetti(); join();
+  };
+
+  // ---- world population clock (UN WPP 2024 medium variant) ----
+  var UN_BASE=8300678395, UN_AT=Date.UTC(2026,6,1), UN_PS=68870000/(365.2425*24*3600);
+  var worldEl=document.getElementById("world");
+  function tickWorld(){ if(!worldEl)return; var now=Math.round(UN_BASE+((Date.now()-UN_AT)/1000)*UN_PS); worldEl.textContent=fmt.format(now); }
+  tickWorld(); setInterval(tickWorld,1000);
+
+  // ---- shared count via the Netlify function ----
+  var last={people:0,members:0,regions:{}}, myRank=0;
+  function animateTo(el,target){
+    var cur=+el.getAttribute("data-v")||0, steps=16,i=0,diff=target-cur;
+    if(diff===0){el.textContent=fmt.format(target);return;}
+    clearInterval(el._t);
+    el._t=setInterval(function(){ i++; el.textContent=fmt.format(Math.round(cur+diff*(i/steps)));
+      if(i>=steps){el.textContent=fmt.format(target);el.setAttribute("data-v",target);clearInterval(el._t);} },26);
+  }
+  function offline(on){ document.getElementById("offline").style.display=on?"block":"none"; }
+
+  function paint(d){
+    last=d;
+    animateTo(document.getElementById("people"), d.people||0);
+    document.getElementById("homes").textContent=fmt.format(d.people||0);
+    document.getElementById("members").textContent=fmt.format(d.members||0);
+    document.getElementById("liveTxt").textContent=(d.people<=1)?"just you so far — share it!":"counting live";
+    var rk=document.getElementById("rank");
+    if(myRank>0){ var suff=(myRank%10===1&&myRank%100!==11)?"st":(myRank%10===2&&myRank%100!==12)?"nd":(myRank%10===3&&myRank%100!==13)?"rd":"th";
+      rk.textContent="🎉 you're human #"+fmt.format(myRank)+suff+" here"; } else rk.textContent="";
+
+    var regs=d.regions||{}, keys=Object.keys(regs).sort(function(a,b){return regs[b]-regs[a];});
+    var max=keys.length?regs[keys[0]]:1;
+    document.getElementById("regCount").textContent=keys.length+(keys.length===1?" region":" regions");
+    var rg=document.getElementById("regions"); rg.innerHTML="";
+    keys.slice(0,6).forEach(function(r){ var info=REG[r]||REG.ZZ; var row=document.createElement("div"); row.className="reg";
+      row.innerHTML='<span class="flag">'+info[1]+'</span><span class="rn">'+info[0]+'</span>'+
+        '<span class="bar" style="width:'+Math.max(10,(regs[r]/max)*90)+'px"></span><span class="rc">'+fmt.format(regs[r])+'</span>';
+      rg.appendChild(row); });
+
+    var map=document.getElementById("map"); map.innerHTML="";
+    keys.forEach(function(r){ var info=REG[r]||REG.ZZ, pins=Math.min(6,Math.max(1,Math.round((regs[r]/max)*5)));
+      for(var k=0;k<pins;k++){ var p=document.createElement("div"); p.className="pin";
+        p.style.left=(info[2]+(Math.random()*10-5))+"%"; p.style.top=(info[3]+(Math.random()*10-5))+"%"; map.appendChild(p); } });
+    if(joinedBefore()){ var mi=REG[MYREG]||REG.ZZ; var mp=document.createElement("div"); mp.className="pin me";
+      mp.style.left=mi[2]+"%"; mp.style.top=mi[3]+"%"; mp.title="you"; map.appendChild(mp); }
+  }
+
+  function get(){
+    fetch(API,{cache:"no-store"}).then(function(r){return r.json();}).then(function(d){ offline(false); paint(d); })
+      .catch(function(){ offline(true); });
+  }
+  function join(){
+    fetch(API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({id:ID,hh:hh,reg:MYREG})})
+      .then(function(r){return r.json();}).then(function(d){
+        offline(false);
+        if(!myRank && d.you){ myRank=d.people; }  // first join: our number is the current total
+        paint(d);
+      }).catch(function(){ offline(true); });
+  }
+
+  // ---- share ----
+  document.getElementById("share").onclick=async function(){
+    var n=document.getElementById("people").textContent||"lots of";
+    var txt="I'm one of "+n+" humans counted on HeadCount 🌍 How many of us are actually here? Add yourself:";
+    try{ if(navigator.share){ await navigator.share({title:"HeadCount",text:txt,url:location.href}); return; } }catch(e){ return; }
+    try{ await navigator.clipboard.writeText(txt+" "+location.href); var b=this; b.textContent="Copied! ✓"; setTimeout(function(){b.textContent="Share HeadCount 🌍";},1500); }catch(e){}
+  };
+
+  // ---- confetti (tiny, no library) ----
+  function confetti(){
+    var c=document.getElementById("confetti"), x=c.getContext("2d");
+    var W=c.width=innerWidth, H=c.height=innerHeight;
+    var cols=["#7ef0c8","#4da3ff","#b98bff","#ffd27e","#ff8fa3"], P=[];
+    for(var i=0;i<140;i++) P.push({x:W/2,y:H*0.34,vx:(Math.random()-.5)*12,vy:Math.random()*-13-4,
+      g:.32+Math.random()*.1,s:5+Math.random()*6,c:cols[i%cols.length],r:Math.random()*6,vr:(Math.random()-.5)*.4,life:0});
+    var t0=Date.now();
+    (function frame(){
+      x.clearRect(0,0,W,H); var done=true;
+      for(var i=0;i<P.length;i++){var p=P[i]; p.vy+=p.g; p.x+=p.vx; p.y+=p.vy; p.r+=p.vr; p.life++;
+        if(p.y<H+20){done=false;} x.save(); x.translate(p.x,p.y); x.rotate(p.r);
+        x.globalAlpha=Math.max(0,1-p.life/120); x.fillStyle=p.c; x.fillRect(-p.s/2,-p.s/2,p.s,p.s*0.6); x.restore(); }
+      if(!done && Date.now()-t0<2600) requestAnimationFrame(frame); else x.clearRect(0,0,W,H);
+    })();
+  }
+
+  // ---- boot ----
+  if(joinedBefore()){ hh=savedHh(); hhEl.textContent=hh; show("s3"); }
+  get();
+  setInterval(get,5000);           // refresh the shared count every 5s
+  // if returning visitor, re-assert presence once so their region stays counted
+  if(joinedBefore()){ join(); }
+})();
+</script>
+</body>
+</html>
