@@ -112,7 +112,7 @@
   .mapwrap{position:relative;border-radius:18px;border:1px solid var(--line);background:#0a1026;overflow:hidden}
   .mapwrap svg{display:block;width:100%;height:auto}
   .country{fill:var(--land);stroke:#0a1026;stroke-width:.3;transition:fill .5s;cursor:pointer}
-  .country.me{stroke:#fff;stroke-width:.9}
+  .country.me{stroke:#fff;stroke-width:1.4}
   .maptip{position:absolute;pointer-events:none;background:#04122b;border:1px solid var(--line);
     color:var(--ink);font-size:12px;font-weight:700;padding:5px 9px;border-radius:8px;transform:translate(-50%,-130%);white-space:nowrap;opacity:0;transition:opacity .15s;z-index:3}
   .maptip.on{opacity:1}
@@ -234,6 +234,7 @@
   function localeCountry(){try{var r=(Intl.DateTimeFormat().resolvedOptions().locale||navigator.language||"").toUpperCase();var m=r.match(/[-_]([A-Z]{2})\b/);return m?m[1]:"ZZ";}catch(e){return "ZZ";}}
 
   var ID=deviceId(), MYREG=localeCountry(), hh=3;
+  function myCountry(){ try{ return localStorage.getItem("hc_country")||MYREG; }catch(e){ return MYREG; } }
 
   function show(id){["s1","s2","s3"].forEach(function(s){document.getElementById(s).classList.toggle("on",s===id);});window.scrollTo(0,0);}
   document.getElementById("joinBtn").onclick=function(){ show("s2"); };
@@ -282,7 +283,7 @@
   var mapReady=false, mapPaths={}, mapSvg=null;
   function paintMap(regs,max){
     if(mapReady){ for(var iso in mapPaths){ var el=mapPaths[iso], n=regs[iso]||0;
-        el.setAttribute("fill",colorFor(n,max)); el.classList.toggle("me", joinedBefore() && iso===MYREG); } return; }
+        el.style.fill=colorFor(n,max); el.classList.toggle("me", joinedBefore() && iso===myCountry()); } return; }
     var map=document.getElementById("map"); if(!map||map.dataset.mode==="svg")return; map.innerHTML="";
     var POS={US:[20,46],CA:[18,30],GB:[47,33],IN:[68,55],NG:[49,60],BR:[33,70],AU:[85,78],DE:[50,34],JP:[83,46],ZA:[53,78],MX:[17,55],FR:[47,37],PK:[66,50],PH:[82,58],ID:[80,64],RU:[70,26],CN:[76,45],ZZ:[50,50]};
     Object.keys(regs).forEach(function(r){var p=POS[r]||POS.ZZ,n=Math.min(6,Math.max(1,Math.round((regs[r]/max)*5)));
@@ -328,7 +329,7 @@
 
   function get(){ fetch(API,{cache:"no-store"}).then(function(r){return r.json();}).then(function(d){offline(false);paint(d);}).catch(function(){offline(true);}); }
   function join(){ fetch(API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({id:ID,hh:hh,reg:MYREG})})
-    .then(function(r){return r.json();}).then(function(d){offline(false); if(!myRank){ myRank=d.people; } paint(d);}).catch(function(){offline(true);}); }
+    .then(function(r){return r.json();}).then(function(d){offline(false); if(d.country){ try{localStorage.setItem("hc_country",d.country);}catch(e){} } if(!myRank){ myRank=d.people; } paint(d);}).catch(function(){offline(true);}); }
 
   document.getElementById("share").onclick=async function(){
     var n=document.getElementById("people").textContent||"";

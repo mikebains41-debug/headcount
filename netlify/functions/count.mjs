@@ -100,7 +100,7 @@ export default async (req, ctx) => {
     }
 
     await store.setJSON(KEY, agg);
-    return new Response(JSON.stringify(shape(agg)), { headers });
+    return new Response(JSON.stringify({ ...shape(agg), country: agg.reg[id] || reg }), { headers });
   }
 
   return new Response(JSON.stringify({ error: 'method' }), { status: 405, headers });
